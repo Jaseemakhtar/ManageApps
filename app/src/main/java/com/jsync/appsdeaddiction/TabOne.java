@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -58,21 +59,33 @@ public class TabOne extends Fragment {
 
         for(ResolveInfo i : activities){
             try {
+
+                String packageName = i.activityInfo.packageName;
+
+                if(packageName.equals(getActivity().getPackageName()))
+                    continue;
+
+                String appName = i.activityInfo.loadLabel(packageManager).toString();
+                String versionName = packageManager.getPackageInfo(i.activityInfo.packageName, 0).versionName;
+                long installedOn = packageManager.getPackageInfo(i.activityInfo.packageName, 0).firstInstallTime;
+                long updatedOn = packageManager.getPackageInfo(i.activityInfo.packageName, 0).lastUpdateTime;
+                Drawable icon = i.activityInfo.loadIcon(packageManager);
+
                 Log.i("ada", "*******************************************");
-                Log.i("ada","Package Name: " + i.activityInfo.packageName);
-                Log.i("ada","Version Name: " +packageManager.getPackageInfo(i.activityInfo.packageName, 0).versionName);
-                Log.i("ada", "Install Time: " +packageManager.getPackageInfo(i.activityInfo.packageName, 0).firstInstallTime);
-                Log.i("ada", "Last Update Time: " + packageManager.getPackageInfo(i.activityInfo.packageName, 0).lastUpdateTime);
-                Log.i("ada","App Name: " + i.activityInfo.loadLabel(packageManager).toString());
+                Log.i("ada","Package Name: " + packageName);
+                Log.i("ada","Version Name: " + versionName);
+                Log.i("ada", "Install Time: " + installedOn);
+                Log.i("ada", "Last Update Time: " + updatedOn);
+                Log.i("ada","App Name: " + appName);
                 Log.i("ada", "*******************************************");
 
                 AppsListModel model = new AppsListModel();
-                model.setAppName(i.activityInfo.loadLabel(packageManager).toString());
-                model.setAppPackageName(i.activityInfo.packageName);
-                model.setVersionName(packageManager.getPackageInfo(i.activityInfo.packageName, 0).versionName);
-                model.setInstalledOn(packageManager.getPackageInfo(i.activityInfo.packageName, 0).firstInstallTime);
-                model.setUpdatedOn(packageManager.getPackageInfo(i.activityInfo.packageName, 0).lastUpdateTime);
-                model.setAppIcon(i.activityInfo.loadIcon(packageManager));
+                model.setAppName(appName);
+                model.setAppPackageName(packageName);
+                model.setVersionName(versionName);
+                model.setInstalledOn(installedOn);
+                model.setUpdatedOn(updatedOn);
+                model.setAppIcon(icon);
                 adapter.add(model);
 
             } catch (PackageManager.NameNotFoundException e) {
