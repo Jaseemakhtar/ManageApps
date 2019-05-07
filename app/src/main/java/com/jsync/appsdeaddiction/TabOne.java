@@ -71,6 +71,7 @@ public class TabOne extends Fragment {
                 long updatedOn = packageManager.getPackageInfo(i.activityInfo.packageName, 0).lastUpdateTime;
                 Drawable icon = i.activityInfo.loadIcon(packageManager);
 
+                /*
                 Log.i("ada", "*******************************************");
                 Log.i("ada","Package Name: " + packageName);
                 Log.i("ada","Version Name: " + versionName);
@@ -78,7 +79,7 @@ public class TabOne extends Fragment {
                 Log.i("ada", "Last Update Time: " + updatedOn);
                 Log.i("ada","App Name: " + appName);
                 Log.i("ada", "*******************************************");
-
+                */
                 AppsListModel model = new AppsListModel();
                 model.setAppName(appName);
                 model.setAppPackageName(packageName);

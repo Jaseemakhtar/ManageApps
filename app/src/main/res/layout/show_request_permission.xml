@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_marginBottom="6dp"
+            android:gravity="center"
+            android:background="#2397f3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:src="@drawable/ic_info_outline"
+                android:layout_width="48dp"
+                android:layout_height="48dp" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_marginBottom="6dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:gravity="center"
+            android:text="You need to provide usage access permission in order to run this app."
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+
+            <Button
+                android:layout_margin="6dp"
+                android:id="@+id/alert_p_button"
+                android:background="@drawable/button_alert"
+                android:theme="@style/MyBlueTheme"
+                android:gravity="center"
+                android:textColor="#2397f3"
+                android:text="Yes, take me!"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/alert_n_button"
+                android:background="@drawable/button_alert"
+                android:gravity="center"
+                android:textColor="#2397f3"
+                android:text="No, Exit App!"
+                android:layout_margin="6dp"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</RelativeLayout>
