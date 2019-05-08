@@ -24,7 +24,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class HomeActivity extends AppCompatActivity {
-
     private TabLayout tabLayout;
     private Toolbar toolbar;
     private ViewPager viewPager;
@@ -53,7 +52,6 @@ public class HomeActivity extends AppCompatActivity {
 
         section = new Section(getSupportFragmentManager());
         viewPager.setAdapter(section);
-
     }
 
     @Override

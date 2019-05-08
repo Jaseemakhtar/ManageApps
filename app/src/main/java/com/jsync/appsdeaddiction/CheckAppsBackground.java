@@ -23,6 +23,7 @@ import java.util.TreeMap;
  */
 
 public class CheckAppsBackground extends Service {
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {

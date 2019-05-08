@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsListHolder> {
 
     private ArrayList<AppsListModel> appsList;
+    private RowOnClickListener rowOnClickListener;
 
     public AppsListAdapter(){
         appsList = new ArrayList<>();
@@ -41,12 +42,16 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
         notifyDataSetChanged();
     }
 
+    public void setRowOnClickListener(RowOnClickListener rowOnClickListener){
+        this.rowOnClickListener = rowOnClickListener;
+    }
+
     @Override
     public int getItemCount() {
         return appsList.size();
     }
 
-    static class AppsListHolder extends RecyclerView.ViewHolder{
+    class AppsListHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView appIcon;
         TextView appName;
         TextView appPackage;
@@ -56,6 +61,18 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
             appIcon = itemView.findViewById(R.id.apps_icon);
             appName = itemView.findViewById(R.id.apps_name);
             appPackage = itemView.findViewById(R.id.app_package_name);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if(rowOnClickListener !=  null){
+                rowOnClickListener.onClickRow(getAdapterPosition());
+            }
+        }
+    }
+
+    interface RowOnClickListener{
+        void onClickRow(int pos);
     }
 }

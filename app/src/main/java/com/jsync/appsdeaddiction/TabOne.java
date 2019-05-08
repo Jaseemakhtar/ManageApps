@@ -2,6 +2,7 @@ package com.jsync.appsdeaddiction;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -16,6 +17,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,14 +29,16 @@ import java.util.List;
  * Created by jaseem on 30/4/19.
  */
 
-public class TabOne extends Fragment {
+public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListener {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private ArrayList<AppsListModel> appsList;
     private AppsListAdapter adapter;
+    private AlertDialog alertDialog;
 
     public  TabOne(){
+        appsList = new ArrayList<>();
     }
 
     @Override
@@ -47,6 +53,7 @@ public class TabOne extends Fragment {
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView = view.findViewById(R.id.apps_recycler_view);
         adapter = new AppsListAdapter();
+        adapter.setRowOnClickListener(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         createList();
@@ -87,6 +94,7 @@ public class TabOne extends Fragment {
                 model.setInstalledOn(installedOn);
                 model.setUpdatedOn(updatedOn);
                 model.setAppIcon(icon);
+                appsList.add(model);
                 adapter.add(model);
 
             } catch (PackageManager.NameNotFoundException e) {
@@ -94,5 +102,47 @@ public class TabOne extends Fragment {
             }
         }
 
+    }
+
+    @Override
+    public void onClickRow(int pos) {
+        showSaveDialog(pos);
+    }
+
+    private void showSaveDialog(final int pos){
+
+        ViewGroup viewGroup = getActivity().findViewById(android.R.id.content);
+        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.restrict_app_layout, viewGroup, false);
+        Button btnSave = dialogView.findViewById(R.id.btn_save);
+        Button btnBack = dialogView.findViewById(R.id.btn_back);
+        ImageView btnClose = dialogView.findViewById(R.id.img_close);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(dialogView);
+
+        alertDialog = builder.create();
+        alertDialog.setCancelable(false);
+        alertDialog.show();
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Locked " + appsList.get(pos).getAppName() + "?", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
