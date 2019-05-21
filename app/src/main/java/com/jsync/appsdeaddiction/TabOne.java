@@ -8,6 +8,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -76,7 +77,12 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                 String versionName = packageManager.getPackageInfo(i.activityInfo.packageName, 0).versionName;
                 long installedOn = packageManager.getPackageInfo(i.activityInfo.packageName, 0).firstInstallTime;
                 long updatedOn = packageManager.getPackageInfo(i.activityInfo.packageName, 0).lastUpdateTime;
-                Drawable icon = i.activityInfo.loadIcon(packageManager);
+                //Drawable icon = i.activityInfo.loadIcon(packageManager);
+                Uri icon = null;
+                ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
+                if(appInfo.icon != 0) {
+                    icon = Uri.parse("android.resource://" + packageName + "/" + appInfo.icon);
+                }
 
                 /*
                 Log.i("ada", "*******************************************");
@@ -93,7 +99,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                 model.setVersionName(versionName);
                 model.setInstalledOn(installedOn);
                 model.setUpdatedOn(updatedOn);
-                model.setAppIcon(icon);
+                model.setAppIcon(icon.toString());
                 appsList.add(model);
                 adapter.add(model);
 

@@ -1,5 +1,6 @@
 package com.jsync.appsdeaddiction;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,7 +35,8 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
     public void onBindViewHolder(@NonNull AppsListHolder holder, int position) {
         holder.appName.setText(appsList.get(position).getAppName());
         holder.appPackage.setText(appsList.get(position).getAppPackageName());
-        holder.appIcon.setImageDrawable(appsList.get(position).getAppIcon());
+        //holder.appIcon.setImageDrawable(appsList.get(position).getAppIcon());
+        holder.appIcon.setImageURI(Uri.parse(appsList.get(position).getAppIcon()));
     }
 
     public void add(AppsListModel model){

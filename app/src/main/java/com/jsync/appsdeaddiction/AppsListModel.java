@@ -8,11 +8,14 @@ import android.graphics.drawable.Drawable;
 
 public class AppsListModel {
     private String appName;
-    private Drawable appIcon;
     private String appPackageName;
     private String versionName;
     private long installedOn;
     private long updatedOn;
+    private String from;
+    private String to;
+    private String appIcon;
+    private int rowId;
 
     public String getAppName() {
         return appName;
@@ -20,14 +23,6 @@ public class AppsListModel {
 
     public void setAppName(String appName) {
         this.appName = appName;
-    }
-
-    public Drawable getAppIcon() {
-        return appIcon;
-    }
-
-    public void setAppIcon(Drawable appIcon) {
-        this.appIcon = appIcon;
     }
 
     public String getAppPackageName() {
@@ -60,5 +55,37 @@ public class AppsListModel {
 
     public void setUpdatedOn(long updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getTo() {
+        return to;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public String getAppIcon() {
+        return appIcon;
+    }
+
+    public void setAppIcon(String uIcon) {
+        this.appIcon = uIcon;
+    }
+
+    public int getRowId() {
+        return rowId;
+    }
+
+    public void setRowId(int rowId) {
+        this.rowId = rowId;
     }
 }
