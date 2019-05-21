@@ -1,29 +1,23 @@
 package com.jsync.appsdeaddiction;
 
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -37,6 +31,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
     private ArrayList<AppsListModel> appsList;
     private AppsListAdapter adapter;
     private AlertDialog alertDialog;
+    private MySQLHelper mySQLHelper;
 
     public  TabOne(){
         appsList = new ArrayList<>();
@@ -58,6 +53,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         createList();
+        mySQLHelper = new MySQLHelper(getContext());
         return view;
     }
 
@@ -120,7 +116,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         ViewGroup viewGroup = getActivity().findViewById(android.R.id.content);
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.restrict_app_layout, viewGroup, false);
         Button btnSave = dialogView.findViewById(R.id.btn_save);
-        Button btnBack = dialogView.findViewById(R.id.btn_back);
+        Button btnUpdate = dialogView.findViewById(R.id.btn_update);
         ImageView btnClose = dialogView.findViewById(R.id.img_close);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -130,9 +126,14 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         alertDialog.setCancelable(false);
         alertDialog.show();
 
-        btnBack.setOnClickListener(new View.OnClickListener() {
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mySQLHelper.update(appsList.get(pos)) > 0){
+                    Toast.makeText(getContext(), appsList.get(pos).getAppName() + " - Update Successfully", Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(getContext(), appsList.get(pos).getAppName() + " - Failed to Update", Toast.LENGTH_LONG).show();
+                }
                 alertDialog.dismiss();
             }
         });
@@ -147,8 +148,11 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Locked " + appsList.get(pos).getAppName() + "?", Toast.LENGTH_LONG).show();
+                mySQLHelper.add(appsList.get(pos));
+                Toast.makeText(getContext(), "Locked " + appsList.get(pos).getAppName() + " - Successfully", Toast.LENGTH_LONG).show();
+                alertDialog.dismiss();
             }
         });
     }
+
 }
