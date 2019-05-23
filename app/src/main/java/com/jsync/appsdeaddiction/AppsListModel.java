@@ -15,7 +15,7 @@ public class AppsListModel {
     private String from;
     private String to;
     private String appIcon;
-    private int rowId;
+    private int rowId = -1;
 
     public String getAppName() {
         return appName;

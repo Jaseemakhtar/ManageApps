@@ -1,21 +1,27 @@
 package com.jsync.appsdeaddiction;
 
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +35,15 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private ArrayList<AppsListModel> appsList;
+    private ArrayList<AppsListModel> appsListDB;
     private AppsListAdapter adapter;
     private AlertDialog alertDialog;
     private MySQLHelper mySQLHelper;
+    int hourFrom, minutesFrom, hourTo, minutesTo;
 
     public  TabOne(){
         appsList = new ArrayList<>();
+        appsListDB = new ArrayList<>();
     }
 
     @Override
@@ -48,21 +57,26 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         View view = inflater.inflate(R.layout.tab_one, container, false);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView = view.findViewById(R.id.apps_recycler_view);
-        adapter = new AppsListAdapter();
+        adapter = new AppsListAdapter(getContext());
         adapter.setRowOnClickListener(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-        createList();
         mySQLHelper = new MySQLHelper(getContext());
+        createList();
         return view;
     }
 
     private void createList(){
+
+        appsListDB = mySQLHelper.getAll();
+
         PackageManager packageManager = getContext().getPackageManager();
         List<ResolveInfo> activities = packageManager.queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER), 0);
 
         for(ResolveInfo i : activities){
             try {
+                AppsListModel model = new AppsListModel();
+
 
                 String packageName = i.activityInfo.packageName;
 
@@ -80,6 +94,21 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                     icon = Uri.parse("android.resource://" + packageName + "/" + appInfo.icon);
                 }
 
+                model.setAppName(appName);
+                model.setAppPackageName(packageName);
+                model.setVersionName(versionName);
+                model.setInstalledOn(installedOn);
+                model.setUpdatedOn(updatedOn);
+                model.setAppIcon(icon.toString());
+
+                for(AppsListModel modelDb: appsListDB){
+                    if(modelDb.getAppPackageName().equals(packageName)){
+                        model.setRowId(modelDb.getRowId());
+                        model.setFrom(modelDb.getFrom());
+                        model.setTo(modelDb.getTo());
+                    }
+                }
+
                 /*
                 Log.i("ada", "*******************************************");
                 Log.i("ada","Package Name: " + packageName);
@@ -89,13 +118,6 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                 Log.i("ada","App Name: " + appName);
                 Log.i("ada", "*******************************************");
                 */
-                AppsListModel model = new AppsListModel();
-                model.setAppName(appName);
-                model.setAppPackageName(packageName);
-                model.setVersionName(versionName);
-                model.setInstalledOn(installedOn);
-                model.setUpdatedOn(updatedOn);
-                model.setAppIcon(icon.toString());
                 appsList.add(model);
                 adapter.add(model);
 
@@ -112,12 +134,15 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
     }
 
     private void showSaveDialog(final int pos){
+        final boolean[] selected = new boolean[2];
 
         ViewGroup viewGroup = getActivity().findViewById(android.R.id.content);
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.restrict_app_layout, viewGroup, false);
         Button btnSave = dialogView.findViewById(R.id.btn_save);
         Button btnUpdate = dialogView.findViewById(R.id.btn_update);
         ImageView btnClose = dialogView.findViewById(R.id.img_close);
+        final TextView btnFrom = dialogView.findViewById(R.id.btn_from);
+        final TextView btnTo = dialogView.findViewById(R.id.btn_to);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(dialogView);
@@ -148,11 +173,96 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mySQLHelper.add(appsList.get(pos));
-                Toast.makeText(getContext(), "Locked " + appsList.get(pos).getAppName() + " - Successfully", Toast.LENGTH_LONG).show();
-                alertDialog.dismiss();
+                boolean saved = true;
+                for(boolean s: selected){
+                    if(!s){
+                        saved = false;
+                        break;
+                    }
+                }
+
+                if(saved){
+                    mySQLHelper.add(appsList.get(pos));
+                    Toast.makeText(getContext(), appsList.get(pos).getAppName() +  ", Blocked - Successfully", Toast.LENGTH_LONG).show();
+                    alertDialog.dismiss();
+                }else{
+                    Toast.makeText(getContext(), "You have to select time", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
+
+        btnFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                        String t;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            hourFrom = timePicker.getHour();
+                            minutesFrom = timePicker.getMinute();
+                        }else{
+                            hourFrom = timePicker.getCurrentHour();
+                            minutesFrom = timePicker.getCurrentMinute();
+                        }
+
+                        t = hourFrom + ":" + minutesFrom;
+
+                        if(hourFrom < 9){
+                            t = "0" + hourFrom;
+                        }
+
+                        if(minutesFrom < 9){
+                            t += ":0" + minutesFrom;
+                        }
+
+                        btnFrom.setText(t);
+                        selected[0] = true;
+                    }
+                }, 21, 07, true);
+                timePickerDialog.show();
+            }
+        });
+
+        btnTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                        String t;
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            hourTo = timePicker.getHour();
+                            minutesTo = timePicker.getMinute();
+                        }else{
+                            hourTo = timePicker.getCurrentHour();
+                            minutesTo = timePicker.getCurrentMinute();
+                        }
+
+                        t = hourTo + ":" + minutesTo;
+
+                        if(hourTo < 9){
+                            t = "0" + hourTo;
+                        }
+
+                        if(minutesTo < 9){
+                            t += ":0" + minutesTo;
+                        }
+
+                        btnTo.setText(t);
+                        selected[1] = true;
+                    }
+                }, 22, 40, true);
+                timePickerDialog.show();
+            }
+        });
+
+
+        if(appsList.get(pos).getRowId() == -1){
+            btnUpdate.setEnabled(false);
+        }
     }
 
 }

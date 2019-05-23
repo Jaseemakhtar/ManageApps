@@ -1,5 +1,7 @@
 package com.jsync.appsdeaddiction;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -19,9 +21,11 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
 
     private ArrayList<AppsListModel> appsList;
     private RowOnClickListener rowOnClickListener;
+    private Context context;
 
-    public AppsListAdapter(){
+    public AppsListAdapter(Context context){
         appsList = new ArrayList<>();
+        this.context = context;
     }
 
     @NonNull
@@ -37,6 +41,13 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
         holder.appPackage.setText(appsList.get(position).getAppPackageName());
         //holder.appIcon.setImageDrawable(appsList.get(position).getAppIcon());
         holder.appIcon.setImageURI(Uri.parse(appsList.get(position).getAppIcon()));
+        Drawable lockIcon;
+        if(appsList.get(position).getRowId() != -1){
+            lockIcon = context.getDrawable(R.drawable.ic_lock_closed);
+        }else{
+            lockIcon = context.getDrawable(R.drawable.ic_lock_open);
+        }
+        holder.imgLocked.setImageDrawable(lockIcon);
     }
 
     public void add(AppsListModel model){
@@ -57,12 +68,14 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
         ImageView appIcon;
         TextView appName;
         TextView appPackage;
+        ImageView imgLocked;
 
         public AppsListHolder(View itemView) {
             super(itemView);
             appIcon = itemView.findViewById(R.id.apps_icon);
             appName = itemView.findViewById(R.id.apps_name);
             appPackage = itemView.findViewById(R.id.app_package_name);
+            imgLocked = itemView.findViewById(R.id.img_locked_state);
             itemView.setOnClickListener(this);
         }
 

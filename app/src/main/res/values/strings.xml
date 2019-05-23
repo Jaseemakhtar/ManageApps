@@ -3,9 +3,9 @@
     <string name="close">close</string>
     <string name="block">Block?</string>
     <string name="from">From</string>
-    <string name="dummy_time">5:00</string>
+    <string name="dummy_time">21:07</string>
     <string name="to">To</string>
-    <string name="dummy_time_2">6:00</string>
+    <string name="dummy_time_2">22:40</string>
     <string name="update">Update</string>
     <string name="save">Save</string>
 </resources>

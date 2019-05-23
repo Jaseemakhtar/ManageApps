@@ -59,12 +59,12 @@ public class MySQLHelper extends SQLiteOpenHelper {
         sqLiteDatabase.close();
     }
 
-    public List<AppsListModel> getAll(){
+    public ArrayList<AppsListModel> getAll(){
         SQLiteDatabase sqLiteDatabase = getReadableDatabase();
-        List<AppsListModel> list = null;
+        ArrayList<AppsListModel> list = new ArrayList<>();
+
         Cursor cursor = sqLiteDatabase.rawQuery(SELECT_TABLE, null);
         if (cursor.moveToFirst()) {
-            list = new ArrayList<>();
             do {
                 AppsListModel row = new AppsListModel();
                 row.setAppName(cursor.getColumnName(cursor.getColumnIndex(COL_APP_NAME)));
