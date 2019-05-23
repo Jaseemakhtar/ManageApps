@@ -42,7 +42,7 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
         //holder.appIcon.setImageDrawable(appsList.get(position).getAppIcon());
         holder.appIcon.setImageURI(Uri.parse(appsList.get(position).getAppIcon()));
         Drawable lockIcon;
-        if(appsList.get(position).getRowId() != -1){
+        if(appsList.get(position).getRowId() > -1){
             lockIcon = context.getDrawable(R.drawable.ic_lock_closed);
         }else{
             lockIcon = context.getDrawable(R.drawable.ic_lock_open);
@@ -70,13 +70,13 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
         TextView appPackage;
         ImageView imgLocked;
 
-        public AppsListHolder(View itemView) {
-            super(itemView);
-            appIcon = itemView.findViewById(R.id.apps_icon);
-            appName = itemView.findViewById(R.id.apps_name);
-            appPackage = itemView.findViewById(R.id.app_package_name);
-            imgLocked = itemView.findViewById(R.id.img_locked_state);
-            itemView.setOnClickListener(this);
+        public AppsListHolder(View view) {
+            super(view);
+            appIcon = view.findViewById(R.id.apps_icon);
+            appName = view.findViewById(R.id.apps_name);
+            appPackage = view.findViewById(R.id.app_package_name);
+            imgLocked = view.findViewById(R.id.img_locked_state);
+            view.setOnClickListener(this);
         }
 
         @Override

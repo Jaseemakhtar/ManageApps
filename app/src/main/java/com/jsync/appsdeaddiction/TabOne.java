@@ -40,6 +40,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
     private AlertDialog alertDialog;
     private MySQLHelper mySQLHelper;
     int hourFrom, minutesFrom, hourTo, minutesTo;
+    private String timeFrom, timeTo;
 
     public  TabOne(){
         appsList = new ArrayList<>();
@@ -198,7 +199,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                        String t;
+                        timeFrom = "";
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             hourFrom = timePicker.getHour();
                             minutesFrom = timePicker.getMinute();
@@ -207,17 +208,23 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                             minutesFrom = timePicker.getCurrentMinute();
                         }
 
-                        t = hourFrom + ":" + minutesFrom;
-
                         if(hourFrom < 9){
-                            t = "0" + hourFrom;
+                            timeFrom = "0" + hourFrom + ":";
+                        }else if(hourFrom <= 0){
+                            timeFrom = "00:";
+                        }else{
+                            timeFrom = hourFrom + ":";
                         }
 
                         if(minutesFrom < 9){
-                            t += ":0" + minutesFrom;
+                            timeFrom += ":0" + minutesFrom;
+                        }else if(minutesFrom <= 0){
+                            timeFrom += "00";
+                        }else{
+                            timeFrom += minutesFrom;
                         }
 
-                        btnFrom.setText(t);
+                        btnFrom.setText(timeFrom);
                         selected[0] = true;
                     }
                 }, 21, 07, true);
@@ -231,7 +238,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                        String t;
+                        timeTo = "";
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             hourTo = timePicker.getHour();
@@ -241,17 +248,23 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                             minutesTo = timePicker.getCurrentMinute();
                         }
 
-                        t = hourTo + ":" + minutesTo;
-
                         if(hourTo < 9){
-                            t = "0" + hourTo;
+                            timeTo = "0" + hourTo + ":";
+                        }else if(hourTo <= 0){
+                            timeTo = "00:";
+                        }else{
+                            timeTo = hourTo + ":";
                         }
 
                         if(minutesTo < 9){
-                            t += ":0" + minutesTo;
+                            timeTo += ":0" + minutesTo;
+                        }else if(minutesTo <= 0){
+                            timeTo += "00";
+                        }else{
+                            timeTo += minutesTo;
                         }
 
-                        btnTo.setText(t);
+                        btnTo.setText(timeTo);
                         selected[1] = true;
                     }
                 }, 22, 40, true);

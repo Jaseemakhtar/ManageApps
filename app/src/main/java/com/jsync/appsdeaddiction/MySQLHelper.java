@@ -67,11 +67,12 @@ public class MySQLHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 AppsListModel row = new AppsListModel();
-                row.setAppName(cursor.getColumnName(cursor.getColumnIndex(COL_APP_NAME)));
-                row.setAppPackageName(cursor.getColumnName(cursor.getColumnIndex(COL_P_NAME)));
-                row.setAppIcon(cursor.getColumnName(cursor.getColumnIndex(COL_ICON)));
-                row.setFrom(cursor.getColumnName(cursor.getColumnIndex(COL_FROM)));
-                row.setTo(cursor.getColumnName(cursor.getColumnIndex(COL_TO)));
+                row.setRowId(cursor.getInt(cursor.getColumnIndex(COL_ID)));
+                row.setAppName(cursor.getString(cursor.getColumnIndex(COL_APP_NAME)));
+                row.setAppPackageName(cursor.getString(cursor.getColumnIndex(COL_P_NAME)));
+                row.setAppIcon(cursor.getString(cursor.getColumnIndex(COL_ICON)));
+                row.setFrom(cursor.getString(cursor.getColumnIndex(COL_FROM)));
+                row.setTo(cursor.getString(cursor.getColumnIndex(COL_TO)));
                 list.add(row);
             } while (cursor.moveToNext());
         }
