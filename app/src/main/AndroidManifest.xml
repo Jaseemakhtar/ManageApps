@@ -2,10 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.jsync.appsdeaddiction">
+
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions"/>
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -21,14 +22,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HomeActivity"></activity>
-        <service android:name=".CheckAppsBackground" android:exported="false" android:enabled="true" />
-        <receiver android:name=".BootBroadcastReceiver" android:enabled="true" android:exported="false" >
+        <activity android:name=".HomeActivity" />
+
+        <service
+            android:name=".CheckAppsBackground"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name=".BootBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".LockedActivity"></activity>
     </application>
 
 </manifest>

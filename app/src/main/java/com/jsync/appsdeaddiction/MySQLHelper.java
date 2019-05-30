@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,8 +75,11 @@ public class MySQLHelper extends SQLiteOpenHelper {
                 row.setFrom(cursor.getString(cursor.getColumnIndex(COL_FROM)));
                 row.setTo(cursor.getString(cursor.getColumnIndex(COL_TO)));
                 list.add(row);
+
             } while (cursor.moveToNext());
         }
+        cursor.close();
+        sqLiteDatabase.close();
         return list;
     }
 
@@ -92,9 +96,10 @@ public class MySQLHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public void delete(AppsListModel model){
+    public int delete(int id){
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
-        sqLiteDatabase.delete(TABLE_NAME, COL_ID + " = ?", new String[] { String.valueOf(model.getRowId()) });
+        int res = sqLiteDatabase.delete(TABLE_NAME, COL_ID + " = ? ", new String[] { String.valueOf(id) });
         sqLiteDatabase.close();
+        return res;
     }
 }

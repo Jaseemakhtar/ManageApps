@@ -89,6 +89,20 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/btn_delete"
+            android:text="@string/delete"
+            android:layout_margin="6dp"
+            android:background="@drawable/red_button"
+            android:textAllCaps="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+
+        <Button
             android:id="@+id/btn_save"
             android:text="@string/save"
             android:layout_margin="6dp"

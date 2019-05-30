@@ -39,7 +39,6 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
     public void onBindViewHolder(@NonNull AppsListHolder holder, int position) {
         holder.appName.setText(appsList.get(position).getAppName());
         holder.appPackage.setText(appsList.get(position).getAppPackageName());
-        //holder.appIcon.setImageDrawable(appsList.get(position).getAppIcon());
         holder.appIcon.setImageURI(Uri.parse(appsList.get(position).getAppIcon()));
         Drawable lockIcon;
         if(appsList.get(position).getRowId() > -1){
@@ -52,6 +51,16 @@ public class AppsListAdapter extends RecyclerView.Adapter<AppsListAdapter.AppsLi
 
     public void add(AppsListModel model){
         appsList.add(model);
+        notifyDataSetChanged();
+    }
+
+    public void remove(int pos){
+        appsList.remove(pos);
+        notifyDataSetChanged();
+    }
+
+    public void clear(){
+        appsList.clear();
         notifyDataSetChanged();
     }
 

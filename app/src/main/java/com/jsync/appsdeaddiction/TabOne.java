@@ -67,6 +67,11 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         return view;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
     private void createList(){
 
         appsListDB = mySQLHelper.getAll();
@@ -77,8 +82,6 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         for(ResolveInfo i : activities){
             try {
                 AppsListModel model = new AppsListModel();
-
-
                 String packageName = i.activityInfo.packageName;
 
                 if(packageName.equals(getActivity().getPackageName()))
@@ -88,7 +91,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                 String versionName = packageManager.getPackageInfo(i.activityInfo.packageName, 0).versionName;
                 long installedOn = packageManager.getPackageInfo(i.activityInfo.packageName, 0).firstInstallTime;
                 long updatedOn = packageManager.getPackageInfo(i.activityInfo.packageName, 0).lastUpdateTime;
-                //Drawable icon = i.activityInfo.loadIcon(packageManager);
+
                 Uri icon = null;
                 ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
                 if(appInfo.icon != 0) {
@@ -110,15 +113,6 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                     }
                 }
 
-                /*
-                Log.i("ada", "*******************************************");
-                Log.i("ada","Package Name: " + packageName);
-                Log.i("ada","Version Name: " + versionName);
-                Log.i("ada", "Install Time: " + installedOn);
-                Log.i("ada", "Last Update Time: " + updatedOn);
-                Log.i("ada","App Name: " + appName);
-                Log.i("ada", "*******************************************");
-                */
                 appsList.add(model);
                 adapter.add(model);
 
@@ -142,6 +136,8 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         Button btnSave = dialogView.findViewById(R.id.btn_save);
         Button btnUpdate = dialogView.findViewById(R.id.btn_update);
         ImageView btnClose = dialogView.findViewById(R.id.img_close);
+        Button btnDelete = dialogView.findViewById(R.id.btn_delete);
+
         final TextView btnFrom = dialogView.findViewById(R.id.btn_from);
         final TextView btnTo = dialogView.findViewById(R.id.btn_to);
 
@@ -157,10 +153,14 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
             public void onClick(View v) {
                 if(mySQLHelper.update(appsList.get(pos)) > 0){
                     Toast.makeText(getContext(), appsList.get(pos).getAppName() + " - Update Successfully", Toast.LENGTH_LONG).show();
+                    appsListDB.clear();
+                    appsList.clear();
+                    adapter.clear();
+                    alertDialog.dismiss();
+                    createList();
                 }else{
                     Toast.makeText(getContext(), appsList.get(pos).getAppName() + " - Failed to Update", Toast.LENGTH_LONG).show();
                 }
-                alertDialog.dismiss();
             }
         });
 
@@ -185,7 +185,13 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                 if(saved){
                     mySQLHelper.add(appsList.get(pos));
                     Toast.makeText(getContext(), appsList.get(pos).getAppName() +  ", Blocked - Successfully", Toast.LENGTH_LONG).show();
+
+                    appsListDB.clear();
+                    appsList.clear();
+                    adapter.clear();
                     alertDialog.dismiss();
+                    createList();
+
                 }else{
                     Toast.makeText(getContext(), "You have to select time", Toast.LENGTH_LONG).show();
                 }
@@ -217,7 +223,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                         }
 
                         if(minutesFrom < 9){
-                            timeFrom += ":0" + minutesFrom;
+                            timeFrom += "0" + minutesFrom;
                         }else if(minutesFrom <= 0){
                             timeFrom += "00";
                         }else{
@@ -225,6 +231,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                         }
 
                         btnFrom.setText(timeFrom);
+                        appsList.get(pos).setFrom(timeFrom);
                         selected[0] = true;
                     }
                 }, 21, 07, true);
@@ -257,7 +264,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                         }
 
                         if(minutesTo < 9){
-                            timeTo += ":0" + minutesTo;
+                            timeTo += "0" + minutesTo;
                         }else if(minutesTo <= 0){
                             timeTo += "00";
                         }else{
@@ -265,6 +272,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
                         }
 
                         btnTo.setText(timeTo);
+                        appsList.get(pos).setTo(timeTo);
                         selected[1] = true;
                     }
                 }, 22, 40, true);
@@ -272,9 +280,30 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
             }
         });
 
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mySQLHelper.delete(appsList.get(pos).getRowId()) > 0){
+                    Toast.makeText(getContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
+
+                    appsListDB.clear();
+                    appsList.clear();
+                    adapter.clear();
+                    alertDialog.dismiss();
+                    createList();
+                }else{
+                    Toast.makeText(getContext(), "Unable to delete", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         if(appsList.get(pos).getRowId() == -1){
             btnUpdate.setEnabled(false);
+            btnDelete.setEnabled(false);
+        }else{
+            btnFrom.setText(appsList.get(pos).getFrom());
+            btnTo.setText(appsList.get(pos).getTo());
+            btnSave.setEnabled(false);
         }
     }
 

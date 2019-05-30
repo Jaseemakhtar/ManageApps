@@ -2,12 +2,15 @@ package com.jsync.appsdeaddiction;
 
 import android.app.AlertDialog;
 import android.app.AppOpsManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabItem;
@@ -30,6 +33,7 @@ public class HomeActivity extends AppCompatActivity {
     private Section section;
     private final int USAGE_ACCESS = 1371;
     private AlertDialog alertDialog;
+    private Intent service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,8 @@ public class HomeActivity extends AppCompatActivity {
 
         section = new Section(getSupportFragmentManager());
         viewPager.setAdapter(section);
+
+        service =  new Intent(this, CheckAppsBackground.class);
     }
 
     @Override
@@ -59,6 +65,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onPause();
         if(alertDialog != null){
             alertDialog.dismiss();
+        }
+        if(isAccessGranted()){
+            startBackgroundService();
         }
     }
 
@@ -68,7 +77,7 @@ public class HomeActivity extends AppCompatActivity {
         if(!isAccessGranted()){
             showAboutPermission();
         }else{
-            startBackgroundService();
+            stopService(service);
         }
     }
 
@@ -80,11 +89,12 @@ public class HomeActivity extends AppCompatActivity {
 
     private void startBackgroundService(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            startForegroundService(new Intent(this, CheckAppsBackground.class));
+            startForegroundService(service);
         }else{
-            startService(new Intent(this, CheckAppsBackground.class));
+            startService(service);
         }
     }
+
     private void showAboutPermission(){
         ViewGroup viewGroup = findViewById(android.R.id.content);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.show_request_permission, viewGroup, false);

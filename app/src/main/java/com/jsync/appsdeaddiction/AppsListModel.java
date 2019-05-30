@@ -88,4 +88,9 @@ public class AppsListModel {
     public void setRowId(int rowId) {
         this.rowId = rowId;
     }
+
+    @Override
+    public String toString() {
+        return appPackageName + " - " + rowId + " - " + from + " - " + to;
+    }
 }
