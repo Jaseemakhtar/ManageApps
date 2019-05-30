@@ -82,7 +82,6 @@ public class TabTwo extends Fragment implements AppsListAdapter.RowOnClickListen
 
     private void showSaveDialog(final int pos){
         final boolean[] selected = new boolean[2];
-
         ViewGroup viewGroup = getActivity().findViewById(android.R.id.content);
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.restrict_app_layout, viewGroup, false);
         Button btnSave = dialogView.findViewById(R.id.btn_save);
@@ -235,7 +234,6 @@ public class TabTwo extends Fragment implements AppsListAdapter.RowOnClickListen
             public void onClick(View v) {
                 if(mySQLHelper.delete(appsListDB.get(pos).getRowId()) > 0){
                     Toast.makeText(getContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
-
                     appsListDB.clear();
                     adapter.clear();
                     alertDialog.dismiss();
@@ -245,7 +243,6 @@ public class TabTwo extends Fragment implements AppsListAdapter.RowOnClickListen
                 }
             }
         });
-
 
         btnFrom.setText(appsListDB.get(pos).getFrom());
         btnTo.setText(appsListDB.get(pos).getTo());

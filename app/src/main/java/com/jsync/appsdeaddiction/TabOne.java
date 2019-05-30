@@ -30,7 +30,7 @@ import java.util.List;
  * Created by jaseem on 30/4/19.
  */
 
-public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListener {
+public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListener, LockStateListener {
 
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
@@ -39,8 +39,9 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
     private AppsListAdapter adapter;
     private AlertDialog alertDialog;
     private MySQLHelper mySQLHelper;
-    int hourFrom, minutesFrom, hourTo, minutesTo;
+    private int hourFrom, minutesFrom, hourTo, minutesTo;
     private String timeFrom, timeTo;
+    private LockStateListener lockStateListener;
 
     public  TabOne(){
         appsList = new ArrayList<>();
@@ -94,9 +95,9 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
 
                 Uri icon = null;
                 ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
-                if(appInfo.icon != 0) {
+                if(appInfo.icon != 0)
                     icon = Uri.parse("android.resource://" + packageName + "/" + appInfo.icon);
-                }
+
 
                 model.setAppName(appName);
                 model.setAppPackageName(packageName);
@@ -307,4 +308,8 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         }
     }
 
+    @Override
+    public void onLockStateChange() {
+
+    }
 }

@@ -34,6 +34,7 @@ public class HomeActivity extends AppCompatActivity {
     private final int USAGE_ACCESS = 1371;
     private AlertDialog alertDialog;
     private Intent service;
+    private LockStateListener lockStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
