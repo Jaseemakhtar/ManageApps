@@ -32,9 +32,8 @@ public class LockedActivity extends AppCompatActivity{
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LockedActivity.this, HomeActivity.class));
                 countDownTimer.cancel();
-                finish();
+                goHome();
             }
         });
 
@@ -84,6 +83,13 @@ public class LockedActivity extends AppCompatActivity{
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
+        goHome();
+    }
+
+    public void goHome(){
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.addCategory(Intent.CATEGORY_HOME);
+        startActivity(i);
+        finish();
     }
 }

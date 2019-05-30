@@ -148,11 +148,6 @@ public class CheckAppsBackground extends Service {
         l.putExtra(APP_ICON, icon);
         l.putExtra(REMAINING, remain);
         startActivity(l);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            stopForeground(true);
-        }else{
-            stopSelf();
-        }
     }
 
     private String retrieveAppName() {
