@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +23,8 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -34,9 +37,11 @@ public class TabThree extends Fragment {
     private UsageStatsManager mUsageStatsManager;
     private LinearLayoutManager mLayoutManager;
     private StatisticsListAdapter adapter;
-
+    private ArrayList<String> packageNames;
+    private ArrayList<StatisticsListModel> appsList;
     public TabThree(){
-
+        packageNames = new ArrayList<>();
+        appsList = new ArrayList<>();
     }
 
     @Override
@@ -59,40 +64,50 @@ public class TabThree extends Fragment {
     }
 
     public void createList(){
+        appsList.clear();
+        packageNames.clear();
         mUsageStatsManager = (UsageStatsManager)getContext().getSystemService(Context.USAGE_STATS_SERVICE);
         List<UsageStats> usageStatsList = getUsageStatistics(UsageStatsManager.INTERVAL_DAILY);
-        PackageManager packageManager = getActivity().getPackageManager();
 
-        for (int i = 0; i < usageStatsList.size(); i++) {
-            StatisticsListModel model = new StatisticsListModel();
-            String packageName = usageStatsList.get(i).getPackageName();
-            String appName = null;
-            Uri icon = null;
-            long lastAccessedTime;
+        PackageManager packageManager = getContext().getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER), 0);
+
+        for(ResolveInfo i : activities){
             try {
-                ApplicationInfo ai = packageManager.getApplicationInfo(packageName, 0);
-                appName = (String) packageManager.getApplicationLabel(ai);
+                StatisticsListModel model = new StatisticsListModel();
+                String packageName = i.activityInfo.packageName;
+                String appName = i.activityInfo.loadLabel(packageManager).toString();
+
+                Uri icon = null;
                 ApplicationInfo appInfo = packageManager.getApplicationInfo(packageName, 0);
                 if(appInfo.icon != 0)
                     icon = Uri.parse("android.resource://" + packageName + "/" + appInfo.icon);
 
+                model.setAppName(appName);
+                model.setPackageName(packageName);
+                model.setAppIcon(icon.toString());
 
+                appsList.add(model);
+                packageNames.add(packageName);
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
+        }
 
-            if(icon != null)
-                model.setAppIcon(icon.toString());
-            model.setPackageName(packageName);
-            model.setAppName(appName);
-            model.setLastAccessed(usageStatsList.get(i).getLastTimeUsed());
-            model.setTotalTime(usageStatsList.get(i).getTotalTimeInForeground());
-            adapter.add(model);
+        for (int i = 0; i < usageStatsList.size(); i++) {
+            String packageName = usageStatsList.get(i).getPackageName();
+
+            if(packageNames.contains(packageName)){
+                int index = packageNames.indexOf(packageName);
+                appsList.get(index).setTotalTime(usageStatsList.get(i).getTotalTimeInForeground());
+                appsList.get(index).setLastAccessed(usageStatsList.get(i).getLastTimeUsed());
+                adapter.add(appsList.get(index));
+            }
+
         }
     }
 
     public List<UsageStats> getUsageStatistics(int intervalType) {
-        // Get the app statistics since one year ago from the current time.
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.YEAR, -1);
 

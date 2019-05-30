@@ -2,6 +2,7 @@ package com.jsync.appsdeaddiction;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ public class LockedActivity extends AppCompatActivity{
     private TextView txtHours, txtMinutes, txtSeconds;
     private Button btnDone;
     private CountDownTimer countDownTimer;
+    private Intent service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +38,7 @@ public class LockedActivity extends AppCompatActivity{
                 goHome();
             }
         });
+        service =  new Intent(this, CheckAppsBackground.class);
 
         Intent intent = getIntent();
         String icon = intent.getStringExtra(CheckAppsBackground.APP_ICON);
@@ -74,6 +77,7 @@ public class LockedActivity extends AppCompatActivity{
     @Override
     protected void onPause() {
         super.onPause();
+        startBackgroundService();
     }
 
     @Override
@@ -91,5 +95,13 @@ public class LockedActivity extends AppCompatActivity{
         i.addCategory(Intent.CATEGORY_HOME);
         startActivity(i);
         finish();
+    }
+
+    private void startBackgroundService(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            startForegroundService(service);
+        }else{
+            startService(service);
+        }
     }
 }

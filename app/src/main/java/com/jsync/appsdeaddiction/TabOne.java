@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -30,7 +31,7 @@ import java.util.List;
  * Created by jaseem on 30/4/19.
  */
 
-public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListener, LockStateListener {
+public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListener{
 
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
@@ -41,7 +42,7 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
     private MySQLHelper mySQLHelper;
     private int hourFrom, minutesFrom, hourTo, minutesTo;
     private String timeFrom, timeTo;
-    private LockStateListener lockStateListener;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public  TabOne(){
         appsList = new ArrayList<>();
@@ -59,6 +60,15 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         View view = inflater.inflate(R.layout.tab_one, container, false);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView = view.findViewById(R.id.apps_recycler_view);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_to_refresh_all_apps);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                createList();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         adapter = new AppsListAdapter(getContext());
         adapter.setRowOnClickListener(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -74,7 +84,9 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
     }
 
     private void createList(){
-
+        adapter.clear();
+        appsList.clear();
+        appsListDB.clear();
         appsListDB = mySQLHelper.getAll();
 
         PackageManager packageManager = getContext().getPackageManager();
@@ -308,8 +320,4 @@ public class TabOne extends Fragment implements AppsListAdapter.RowOnClickListen
         }
     }
 
-    @Override
-    public void onLockStateChange() {
-
-    }
 }

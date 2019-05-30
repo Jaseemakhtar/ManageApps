@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HomeActivity" />
+        <activity android:name=".HomeActivity" android:launchMode="singleInstance"/>
 
         <service
             android:name=".CheckAppsBackground"
@@ -40,7 +40,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".LockedActivity"></activity>
+        <activity android:name=".LockedActivity" android:launchMode="singleInstance" />
     </application>
 
 </manifest>

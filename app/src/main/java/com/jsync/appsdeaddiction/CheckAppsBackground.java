@@ -27,26 +27,19 @@ import java.util.TreeMap;
  */
 
 public class CheckAppsBackground extends Service {
-    private IBinder binder = new LocalBinder();
     private MySQLHelper mySQLHelper;
     private ArrayList<AppsListModel> appsListDB;
     private ArrayList<String> packageNames;
     private Thread myThread;
 
     public static final String REMAINING = "remaining";
-
     public static final String APP_ICON = "icon";
-
-    class LocalBinder extends Binder{
-        public CheckAppsBackground getService(){
-            return CheckAppsBackground.this;
-        }
-    }
+    public static boolean isRunning = true;
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return binder;
+        return null;
     }
 
     @Override
@@ -72,12 +65,15 @@ public class CheckAppsBackground extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        while(true)
         try {
             myThread.join();
+            break;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        super.onDestroy();
     }
 
     class CheckThread implements Runnable{
@@ -92,12 +88,18 @@ public class CheckAppsBackground extends Service {
             }
             String p;
 
-            while(true){
-                Log.i("ada", "Running: ");
+            while(isRunning){
                 try {
+                    Thread.sleep(600);
                     p = retrieveAppName();
+
+                    if(p.equals(getPackageName())){
+                        stopForeground(true);
+                        stopSelf();
+                        break;
+                    }
+
                     if(packageNames.contains(p)){
-                        Log.i("ada", "You are accessing : " + p + " which is locked");
 
                         String icon = appsListDB.get(packageNames.indexOf(p)).getAppIcon();
                         String from = appsListDB.get(packageNames.indexOf(p)).getFrom();
@@ -122,20 +124,17 @@ public class CheckAppsBackground extends Service {
                         long end = (toHour * 60) + toMinute;
 
                         if(current < start){
-                            //System.out.println("Still " + (start - current) + "minutes remaining.");
                             startActivity((start - current), icon);
                         }else if(current >= start && current <= end){
-                            //System.out.println("In between");
-                            //Do nothing, let the app be opened;
+
                         }else{
                             long tE = 23 * 60 + 59;
                             long cE = tE - end;
                             long tD = cE + start;
-                            //System.out.println("Still " + (tD) + "minutes remaining.");
                             startActivity(tD, icon);
                         }
                     }
-                    Thread.sleep(750);
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

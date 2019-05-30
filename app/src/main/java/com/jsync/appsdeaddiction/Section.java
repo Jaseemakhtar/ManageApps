@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 
 public class Section extends FragmentPagerAdapter {
-    private LockStateListener lockStateListener;
+
     public Section(FragmentManager fm) {
         super(fm);
     }
@@ -32,9 +32,7 @@ public class Section extends FragmentPagerAdapter {
 
     }
 
-    public void setLockStateListener(LockStateListener lockStateListener){
-        this.lockStateListener = lockStateListener;
-    }
+
 
     @Override
     public int getCount() {

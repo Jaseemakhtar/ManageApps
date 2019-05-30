@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ public class TabTwo extends Fragment implements AppsListAdapter.RowOnClickListen
     private MySQLHelper mySQLHelper;
     int hourFrom, minutesFrom, hourTo, minutesTo;
     private String timeFrom, timeTo;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public TabTwo(){
         appsListDB = new ArrayList<>();
@@ -52,6 +54,14 @@ public class TabTwo extends Fragment implements AppsListAdapter.RowOnClickListen
         View view = inflater.inflate(R.layout.tab_two, container, false);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView = view.findViewById(R.id.restricted_apps_recycle_view);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_to_refresh_res_apps);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                createList();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
         adapter = new AppsListAdapter(getContext());
         adapter.setRowOnClickListener(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -67,6 +77,8 @@ public class TabTwo extends Fragment implements AppsListAdapter.RowOnClickListen
     }
 
     private void createList(){
+        adapter.clear();
+        appsListDB.clear();
         appsListDB = mySQLHelper.getAll();
         for(AppsListModel modelDb: appsListDB){
             AppsListModel model = new AppsListModel();
